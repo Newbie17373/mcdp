@@ -1,0 +1,81 @@
+.body,
+* {
+  margin: 0;
+  padding: 0;
+  transition: all 0.185ms linear 0s;
+  letter-spacing: 0.025rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+a,
+li,
+ol,
+ul {
+  list-style-type: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+a:visited,
+a:active,
+button,
+input {
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+button,
+input {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+header,
+footer {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+/* *::selection,
+*::-moz-selection {
+  background-color: var(--selection-clr);
+}
+
+::-webkit-scrollbar {
+  width: 12.5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--black);
+  box-shadow: rgba(0, 0, 0, 0.2) inset;
+  border-radius: 41px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--prices-bg);
+  box-shadow: rgba(0, 0, 0, 0.2) inset;
+  border-radius: 41px;
+  margin: 2px;
+}
+
+@media (max-width: 32px) {
+  ::-webkit-scrollbar {
+    width: fit-content;
+  }
+} */

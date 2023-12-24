@@ -1,0 +1,10 @@
+:root {
+  --fnt-clr: #fff;
+  --bg-clr: #080808;
+  --hdr-btn-bdr-clr: #ff0000;
+  --hdr-btn-bg-clr: none;
+  --hdr-btn-fnt-clr: #fff;
+  --hdr-btn-bdr-clr-hvr: #170055;
+  --hdr-btn-bg-clr-hvr: #19002e;
+  --hdr-btn-fnt-clr-hvr: #000;
+}
