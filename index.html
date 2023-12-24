@@ -9,79 +9,85 @@
     <link rel="stylesheet" href="./assets/css/pages/index.css" />
   </head>
   <body>
-    <!-- youtube music integration -->
-    <h1>YouTube Music Integration</h1>
+    <div class="wrapper">
+      <!-- youtube music integration -->
+      <h1 class="">YouTube Music Integration</h1>
 
-    <label for="searchInput">Search:</label>
-    <input type="text" id="searchInput" placeholder="Enter your search query" />
-    <button onclick="searchYouTubeMusic()">Search</button>
-    <button onclick="clearResults()">Clear</button>
+      <label for="searchInput">Search:</label>
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Enter your search query"
+      />
+      <button onclick="searchYouTubeMusic()">Search</button>
+      <button onclick="clearResults()">Clear</button>
 
-    <ul id="searchResults"></ul>
+      <ul id="searchResults"></ul>
 
-    <!-- Add the player container -->
-    <div id="player"></div>
+      <!-- Add the player container -->
+      <div id="player"></div>
 
-    <script>
-      // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
-      const apiKey = "AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI";
-      const apiUrl = "https://www.googleapis.com/youtube/v3/search";
-      const playerContainer = document.getElementById("player");
+      <script>
+        // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
+        const apiKey = "AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI";
+        const apiUrl = "https://www.googleapis.com/youtube/v3/search";
+        const playerContainer = document.getElementById("player");
 
-      function searchYouTubeMusic() {
-        const searchQuery = document.getElementById("searchInput").value;
-        const requestUrl = `${apiUrl}?q=${encodeURIComponent(
-          searchQuery
-        )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=10`;
+        function searchYouTubeMusic() {
+          const searchQuery = document.getElementById("searchInput").value;
+          const requestUrl = `${apiUrl}?q=${encodeURIComponent(
+            searchQuery
+          )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=10`;
 
-        fetch(requestUrl)
-          .then((response) => response.json())
-          .then((data) => displaySearchResults(data.items))
-          .catch((error) => console.error("Error:", error));
-      }
+          fetch(requestUrl)
+            .then((response) => response.json())
+            .then((data) => displaySearchResults(data.items))
+            .catch((error) => console.error("Error:", error));
+        }
 
-      const searchResultsContainer = document.getElementById("searchResults");
+        const searchResultsContainer = document.getElementById("searchResults");
 
-      function clearResults() {
-        searchResultsContainer.innerHTML = "";
-      }
+        function clearResults() {
+          searchResultsContainer.innerHTML = "";
+        }
 
-      function displaySearchResults(results) {
-        clearResults();
+        function displaySearchResults(results) {
+          clearResults();
 
-        results.forEach((result) => {
-          const videoId = result.id.videoId;
-          const title = result.snippet.title;
-          const thumbnailUrl = result.snippet.thumbnails.default.url;
+          results.forEach((result) => {
+            const videoId = result.id.videoId;
+            const title = result.snippet.title;
+            const thumbnailUrl = result.snippet.thumbnails.default.url;
 
-          const listItem = document.createElement("li");
-          listItem.innerHTML = `
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
       <img src="${thumbnailUrl}" alt="${title}">
       <p>${title}</p>
       <button onclick="playVideo('${videoId}')">Play</button>
     `;
 
-          searchResultsContainer.appendChild(listItem);
-        });
-      }
+            searchResultsContainer.appendChild(listItem);
+          });
+        }
 
-      function playVideo(videoId) {
-        const playerHtml = `
+        function playVideo(videoId) {
+          const playerHtml = `
     <iframe id="youtubePlayer" width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
   `;
 
-        playerContainer.innerHTML = playerHtml;
+          playerContainer.innerHTML = playerHtml;
 
-        // Добавим событие 'onload' для iframe, чтобы начать воспроизведение после полной загрузки
-        const youtubePlayer = document.getElementById("youtubePlayer");
-        youtubePlayer.onload = function () {
-          youtubePlayer.contentWindow.postMessage(
-            '{"event":"command","func":"playVideo","args":""}',
-            "*"
-          );
-        };
-      }
-    </script>
-    <!-- youtube music integration end -->
+          // Добавим событие 'onload' для iframe, чтобы начать воспроизведение после полной загрузки
+          const youtubePlayer = document.getElementById("youtubePlayer");
+          youtubePlayer.onload = function () {
+            youtubePlayer.contentWindow.postMessage(
+              '{"event":"command","func":"playVideo","args":""}',
+              "*"
+            );
+          };
+        }
+      </script>
+      <!-- youtube music integration end -->
+    </div>
   </body>
 </html>
