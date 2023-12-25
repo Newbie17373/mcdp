@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Music Chill Dance Player v 0.1</title>
     <link rel="stylesheet" href="./assets/css/pages/index.css" />
+    <script src="./assets/js/burger.js" defer></script>
   </head>
   <body>
     <div class="wrapper">
@@ -25,21 +26,38 @@
           <nav class="header__nav">
             <ul class="header__list">
               <li class="header__list-item">
-                <a href="./index.html" class="header__list-link">Main</a>
+                <a
+                  href="https://steady-beignet-63d8ae.netlify.app/#"
+                  class="header__list-link"
+                  >Main</a
+                >
               </li>
               <li class="header__list-item">
                 <a href="#" class="header__list-link">About</a>
               </li>
               <li class="header__list-item">
-                <a href="#" class="header__list-link">Donate</a>
+                <a
+                  href="https://t.me/Bakerman111"
+                  target="_blank"
+                  class="header__list-link"
+                  >Donate</a
+                >
               </li>
               <li class="header__list-item">
                 <a href="#" class="header__list-link">Socials</a>
               </li>
+              <li class="header__list-item header__list-item_last">
+                <div class="header__personal-area">
+                  <button class="header__button header__button_header">
+                    Sign in/Sign up
+                  </button>
+                </div>
+              </li>
             </ul>
           </nav>
-          <div class="header__personal-area">
-            <button class="header__button">Sign in/Sign up</button>
+
+          <div class="header__burger">
+            <span></span>
           </div>
         </div>
       </header>
@@ -50,7 +68,7 @@
               <!-- youtube music integration -->
               <h2 class="youtube__title">YouTube Music Integration</h2>
 
-              <label for="searchInput">Search:</label>
+              <label class="youtube__label" for="searchInput">Search:</label>
               <input
                 type="text"
                 id="searchInput"

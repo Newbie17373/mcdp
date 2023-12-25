@@ -4,6 +4,10 @@ body {
   width: 100%;
 }
 
+body.lock {
+  overflow: hidden;
+}
+
 body {
   font-size: 16px;
   font-family: "Roboto", sans-serif;

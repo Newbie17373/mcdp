@@ -40,7 +40,10 @@
 
 .youtube__title {
   text-shadow: var(--bg-clr) 1px 1px 5px;
-  margin-bottom: 20px;
+  margin: 10px 0;
+}
+
+.youtube__label {
 }
 
 .youtube__menu {
@@ -71,19 +74,36 @@
   gap: 50px;
 }
 
+@media (max-width: 768px) {
+  #searchResults {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+#searchResults > li {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  flex-direction: column;
+  /* border: 1px solid var(--hdr-btn-bdr-clr); */
+  padding: 2px;
+  border-radius: 5px;
+}
+
 .youtube__image {
-  width: 150px;
-  aspect-ratio: 1/1;
+  width: 140px;
 }
 
 .youtube__image-item {
-  min-height: 100%;
-  aspect-ratio: 1/1;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 5px;
 }
 
 .youtube__button {
   background-color: #ff0000;
   border: 1px solid #1a1a1a;
+  margin-top: 10px;
 }
 
 .youtube__button:hover {
@@ -93,6 +113,9 @@
 
 #player {
   margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: start;
 }
 
 @import url(../components/footer.css);
