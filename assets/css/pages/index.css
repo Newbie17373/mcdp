@@ -85,6 +85,11 @@
   border: 1px solid #1a1a1a;
 }
 
+.youtube__button:hover {
+  background-color: #000000;
+  border: 1px solid var(--hdr-btn-bdr-clr-hvr);
+}
+
 #player {
   margin-top: 20px;
 }

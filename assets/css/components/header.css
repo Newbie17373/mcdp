@@ -7,6 +7,7 @@ header {
   align-items: start;
   justify-content: center;
   backdrop-filter: blur(5px);
+  text-shadow: var(--bg-clr) 0.5px 0.5px;
 }
 
 .header__inside {
