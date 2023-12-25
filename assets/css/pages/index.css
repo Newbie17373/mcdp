@@ -30,6 +30,7 @@
   flex-direction: column;
   background: linear-gradient(90deg, #fc466b 0%, #3f5efb 100%);
   padding: 0 !important;
+  text-shadow: var(--bg-clr) 1px 1px 5px;
 }
 
 .youtube__inside {
