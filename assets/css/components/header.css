@@ -60,7 +60,7 @@ header {
     justify-content: center;
     flex-direction: column;
     backdrop-filter: blur(50px);
-    top: -120vh;
+    top: -140vh;
     transition: all 200ms linear;
   }
 
