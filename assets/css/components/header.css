@@ -7,7 +7,9 @@ header {
   align-items: start;
   justify-content: center;
   backdrop-filter: blur(10px);
+  background-color: var(--bg-hdr-clr);
   text-shadow: var(--bg-clr) 0.5px 0.5px;
+  z-index: 5;
 }
 
 .header__inside {
@@ -24,7 +26,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
   height: 100%;
 }
 
@@ -38,6 +40,7 @@ header {
 
 .header__title {
   font-family: "Rubik Doodle Shadow", sans-serif;
+  letter-spacing: 1.2px;
 }
 
 .header__nav {
@@ -57,7 +60,7 @@ header {
     justify-content: center;
     flex-direction: column;
     backdrop-filter: blur(50px);
-    top: -100vh;
+    top: -120vh;
     transition: all 200ms linear;
   }
 
@@ -123,6 +126,7 @@ header {
 
 .header__button:hover {
   background-color: var(--hdr-btn-bg-clr-hvr);
+  border: 2px solid var(--hdr-btn-bg-clr-hvr);
 }
 
 .header__burger {

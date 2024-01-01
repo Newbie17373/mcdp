@@ -68,32 +68,33 @@
               <!-- youtube music integration -->
               <h2 class="youtube__title">YouTube Music Integration</h2>
 
-              <label class="youtube__label" for="searchInput">Search:</label>
-              <input
-                type="text"
-                id="searchInput"
-                placeholder="Enter your search query"
-              />
-              <ul class="youtube__menu">
-                <li class="youtube-menu-item">
-                  <button
-                    class="youtube__button header__button"
-                    onclick="searchYouTubeMusic()"
-                  >
-                    Search
-                  </button>
-                </li>
-                <li class="youtube-menu-item">
-                  <button
-                    class="youtube__button header__button"
-                    onclick="clearResults()"
-                  >
-                    Clear
-                  </button>
-                </li>
-              </ul>
-
-              <ul id="searchResults"></ul>
+              <div class="youtube__search">
+                <label class="youtube__label" for="searchInput">Search:</label>
+                <input
+                  type="text"
+                  id="searchInput"
+                  placeholder="Enter your search query"
+                />
+                <ul class="youtube__menu">
+                  <li class="youtube-menu-item">
+                    <button
+                      class="youtube__button header__button"
+                      onclick="searchYouTubeMusic()"
+                    >
+                      Search
+                    </button>
+                  </li>
+                  <li class="youtube-menu-item">
+                    <button
+                      class="youtube__button header__button"
+                      onclick="clearResults()"
+                    >
+                      Clear
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <ul id="searchResults" class="youtube__search-results"></ul>
 
               <!-- Add the player container -->
               <div id="player"></div>
