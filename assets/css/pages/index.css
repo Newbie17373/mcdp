@@ -123,11 +123,32 @@
   border: 1px solid var(--hdr-btn-bdr-clr-hvr);
 }
 
-#player {
+.youtube__player {
   margin-top: 50px;
   display: flex;
-  align-items: center;
-  justify-content: start;
+  align-items: start;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.youtube__player-item {
+  width: 45%;
+  aspect-ratio: 1.7/1;
+}
+
+@media (max-width: 768px) {
+  .youtube__player-item {
+    width: 75%;
+    aspect-ratio: 1.7/1;
+  }
+}
+
+@media (max-width: 576px) {
+  .youtube__player-item {
+    width: 100%;
+    aspect-ratio: 1.7/1;
+  }
 }
 
 @import url(../components/footer.css);

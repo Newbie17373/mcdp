@@ -99,7 +99,7 @@
               <ul id="searchResults" class="youtube__search-results"></ul>
 
               <!-- Add the player container -->
-              <div id="player"></div>
+              <div class="youtube__player" id="player"></div>
 
               <script>
                 // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
@@ -150,7 +150,8 @@
 
                 function playVideo(videoId) {
                   const playerHtml = `
-<iframe id="youtubePlayer" width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+<iframe id="youtubePlayer" class="youtube__player-item" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+<a class="youtube__button header__button" href="https://www.youtubezz.com/watch?v=${videoId}" target="_blank">Download (.mp3 320kbps|| edit & cut .mp3)</a>
 `;
 
                   playerContainer.innerHTML = playerHtml;
@@ -169,6 +170,14 @@
               <!-- youtube music integration end -->
             </div>
           </div>
+          <!-- <iframe
+            src="https://discord.com/widget?id=1193286923272335502&theme=dark"
+            width="350"
+            height="500"
+            allowtransparency="true"
+            frameborder="0"
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+          ></iframe> -->
         </div>
       </div>
     </div>
