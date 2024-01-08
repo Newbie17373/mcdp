@@ -102,7 +102,6 @@
               <div class="youtube__player" id="player"></div>
 
               <script>
-                // Replace 'YOUR_API_KEY' with your actual YouTube Data API key
                 const apiKey = "AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI";
                 const apiUrl = "https://www.googleapis.com/youtube/v3/search";
                 const playerContainer = document.getElementById("player");
@@ -140,19 +139,100 @@
                     <div class="youtube__image">
                       <img class="youtube__image-item" src="${thumbnailUrl}" alt="${title}">
                       </div>
-<p class="youtube__title">${title}</p>
-<button class="youtube__button header__button" onclick="playVideo('${videoId}')">Play</button>
-`;
+                      <p class="youtube__title">${title}</p>
+                      <button class="youtube__button header__button" onclick="playVideo('${videoId}')">Play</button>
+                      `;
 
                     searchResultsContainer.appendChild(listItem);
                   });
                 }
 
+                // проверка нахождения видео в плейлисте
+                async function getVideoOwnerChannelId(videoId) {
+                  const videoUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${apiKey}`;
+
+                  try {
+                    const response = await fetch(videoUrl);
+                    const data = await response.json();
+                    const video = data.items[0];
+                    return video.snippet.channelId;
+                  } catch (error) {
+                    console.error("Error in getVideoOwnerChannelId:", error);
+                    throw error;
+                  }
+                }
+
+                async function getPlaylistsForChannel(channelId) {
+                  const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channelId}&key=${apiKey}`;
+
+                  try {
+                    const response = await fetch(playlistsUrl);
+                    const data = await response.json();
+                    return data.items || [];
+                  } catch (error) {
+                    console.error("Error in getPlaylistsForChannel:", error);
+                    throw error;
+                  }
+                }
+
+                async function isVideoInPlaylist(videoId, playlistId) {
+                  const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${apiKey}`;
+
+                  try {
+                    const response = await fetch(playlistItemsUrl);
+                    const data = await response.json();
+                    const playlistItems = data.items || [];
+                    return playlistItems.some(
+                      (item) => item.snippet.resourceId.videoId === videoId
+                    );
+                  } catch (error) {
+                    console.error("Error in isVideoInPlaylist:", error);
+                    throw error;
+                  }
+                }
+
+                async function checkVideoInPlaylists(videoIdToCheck) {
+                  try {
+                    const videoOwnerChannelId = await getVideoOwnerChannelId(
+                      videoIdToCheck
+                    );
+                    const playlists = await getPlaylistsForChannel(
+                      videoOwnerChannelId
+                    );
+
+                    for (const playlist of playlists) {
+                      const playlistId = playlist.id;
+                      const playlistTitle = playlist.snippet.title;
+                      const isInPlaylist = await isVideoInPlaylist(
+                        videoIdToCheck,
+                        playlistId
+                      );
+
+                      if (isInPlaylist) {
+                        console.log(
+                          `Видео входит в плейлист "${playlistTitle}" (ID: ${playlistId})`
+                        );
+                      }
+                    }
+                  } catch (error) {
+                    console.error("Error:", error);
+                  }
+                }
+
+                // конец проверки нахождения видео в плейлисте
+
                 function playVideo(videoId) {
+                  // Использование(проверка на вхождение):
+
+                  // Использование:
+                  const videoIdToCheck = videoId;
+                  checkVideoInPlaylists(videoIdToCheck);
+                  // Использование(проверка на вхождение), end
+
                   const playerHtml = `
-<iframe id="youtubePlayer" class="youtube__player-item" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-<a class="youtube__button header__button" href="https://www.youtubezz.com/watch?v=${videoId}" target="_blank">Download (.mp3 320kbps|| edit & cut .mp3)</a>
-`;
+                  <iframe id="youtubePlayer" class="youtube__player-item" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
+                  <a class="youtube__button header__button" href="https://www.youtubezz.com/watch?v=${videoId}" target="_blank">Download (.mp3 320kbps|| edit & cut .mp3)</a>
+                    `;
 
                   playerContainer.innerHTML = playerHtml;
 
