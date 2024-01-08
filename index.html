@@ -148,85 +148,102 @@
                 }
 
                 // проверка нахождения видео в плейлисте
-                async function getVideoOwnerChannelId(videoId) {
-                  const videoUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${apiKey}`;
+                function getAllPlaylistsForChannel(
+                  channelId,
+                  nextPageToken = null
+                ) {
+                  const maxResults = 50;
+                  const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channelId}&key=${apiKey}&maxResults=${maxResults}&pageToken=${
+                    nextPageToken || ""
+                  }`;
 
-                  try {
-                    const response = await fetch(videoUrl);
-                    const data = await response.json();
-                    const video = data.items[0];
-                    return video.snippet.channelId;
-                  } catch (error) {
-                    console.error("Error in getVideoOwnerChannelId:", error);
-                    throw error;
-                  }
-                }
+                  return fetch(playlistsUrl)
+                    .then((response) => response.json())
+                    .then((data) => {
+                      const playlists = data.items || [];
+                      console.log("Playlists for channel:", playlists);
 
-                async function getPlaylistsForChannel(channelId) {
-                  const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channelId}&key=${apiKey}`;
-
-                  try {
-                    const response = await fetch(playlistsUrl);
-                    const data = await response.json();
-                    return data.items || [];
-                  } catch (error) {
-                    console.error("Error in getPlaylistsForChannel:", error);
-                    throw error;
-                  }
-                }
-
-                async function isVideoInPlaylist(videoId, playlistId) {
-                  const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${playlistId}&key=${apiKey}`;
-
-                  try {
-                    const response = await fetch(playlistItemsUrl);
-                    const data = await response.json();
-                    const playlistItems = data.items || [];
-                    return playlistItems.some(
-                      (item) => item.snippet.resourceId.videoId === videoId
-                    );
-                  } catch (error) {
-                    console.error("Error in isVideoInPlaylist:", error);
-                    throw error;
-                  }
-                }
-
-                async function checkVideoInPlaylists(videoIdToCheck) {
-                  try {
-                    const videoOwnerChannelId = await getVideoOwnerChannelId(
-                      videoIdToCheck
-                    );
-                    const playlists = await getPlaylistsForChannel(
-                      videoOwnerChannelId
-                    );
-
-                    for (const playlist of playlists) {
-                      const playlistId = playlist.id;
-                      const playlistTitle = playlist.snippet.title;
-                      const isInPlaylist = await isVideoInPlaylist(
-                        videoIdToCheck,
-                        playlistId
-                      );
-
-                      if (isInPlaylist) {
-                        console.log(
-                          `Видео входит в плейлист "${playlistTitle}" (ID: ${playlistId})`
+                      // Проверяем, есть ли следующая страница
+                      const nextPageToken = data.nextPageToken;
+                      if (nextPageToken) {
+                        // Рекурсивно вызываем функцию для следующей страницы
+                        return getAllPlaylistsForChannel(
+                          channelId,
+                          nextPageToken
+                        ).then((nextPagePlaylists) =>
+                          playlists.concat(nextPagePlaylists)
                         );
+                      } else {
+                        return playlists;
                       }
-                    }
-                  } catch (error) {
-                    console.error("Error:", error);
-                  }
+                    })
+                    .catch((error) => {
+                      console.error(
+                        "Error in getAllPlaylistsForChannel:",
+                        error
+                      );
+                      throw error;
+                    });
                 }
 
+                function getAllVideosInPlaylist(
+                  playlistId,
+                  nextPageToken = null
+                ) {
+                  const maxResults = 50;
+                  const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${playlistId}&key=${apiKey}&pageToken=${
+                    nextPageToken || ""
+                  }`;
+
+                  return fetch(playlistItemsUrl)
+                    .then((response) => response.json())
+                    .then((data) => {
+                      const playlistItems = data.items || [];
+                      console.log("Playlist items:", playlistItems);
+
+                      // Проверяем, есть ли следующая страница
+                      const nextPageToken = data.nextPageToken;
+                      if (nextPageToken) {
+                        // Рекурсивно вызываем функцию для следующей страницы
+                        return getAllVideosInPlaylist(
+                          playlistId,
+                          nextPageToken
+                        ).then((nextPageVideos) =>
+                          playlistItems.concat(nextPageVideos)
+                        );
+                      } else {
+                        return playlistItems;
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("Error in getAllVideosInPlaylist:", error);
+                      throw error;
+                    });
+                }
                 // конец проверки нахождения видео в плейлисте
 
                 function playVideo(videoId) {
                   // Использование(проверка на вхождение):
-
                   // Использование:
-                  const videoIdToCheck = videoId;
-                  checkVideoInPlaylists(videoIdToCheck);
+                  const channelId = "YOUR_CHANNEL_ID";
+
+                  getAllPlaylistsForChannel(channelId)
+                    .then((playlists) => {
+                      playlists.forEach((playlist) => {
+                        const playlistId = playlist.id;
+                        const playlistTitle = playlist.snippet.title;
+
+                        getAllVideosInPlaylist(playlistId)
+                          .then((videos) => {
+                            console.log(
+                              `Videos in playlist "${playlistTitle}" (ID: ${playlistId}):`,
+                              videos
+                            );
+                          })
+                          .catch((error) => console.error("Error:", error));
+                      });
+                    })
+                    .catch((error) => console.error("Error:", error));
                   // Использование(проверка на вхождение), end
 
                   const playerHtml = `
