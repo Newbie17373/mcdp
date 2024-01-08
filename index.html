@@ -81,7 +81,7 @@
                     <button
                       id="myButton"
                       class="youtube__button header__button"
-                      onclick="searchAlbumsAndPlaylistsForChannel()"
+                      onclick="searchYouTubeMusic()"
                     >
                       Search
                     </button>
@@ -106,27 +106,17 @@
                 const apiUrl = "https://www.googleapis.com/youtube/v3/search";
                 const playerContainer = document.getElementById("player");
 
-                function searchAlbumsAndPlaylistsForChannel(channelId) {
-                  const maxResults = 50;
-                  const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=album+release+playlist&type=playlist&channelId=${channelId}&key=${apiKey}&maxResults=${maxResults}`;
+                function searchYouTubeMusic() {
+                  const searchQuery =
+                    document.getElementById("searchInput").value;
+                  const requestUrl = `${apiUrl}?q=${encodeURIComponent(
+                    searchQuery
+                  )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=10`;
 
-                  return fetch(searchUrl)
+                  fetch(requestUrl)
                     .then((response) => response.json())
-                    .then((data) => {
-                      const albumsAndPlaylists = data.items || [];
-                      console.log(
-                        "Albums and playlists for channel:",
-                        albumsAndPlaylists
-                      );
-                      return albumsAndPlaylists;
-                    })
-                    .catch((error) => {
-                      console.error(
-                        "Error in searchAlbumsAndPlaylistsForChannel:",
-                        error
-                      );
-                      throw error;
-                    });
+                    .then((data) => displaySearchResults(data.items))
+                    .catch((error) => console.error("Error:", error));
                 }
 
                 const searchResultsContainer =
@@ -146,50 +136,34 @@
 
                     const listItem = document.createElement("li");
                     listItem.innerHTML = `
-      <div class="youtube__image">
-        <img class="youtube__image-item" src="${thumbnailUrl}" alt="${title}">
-      </div>
-      <p class="youtube__title">${title}</p>
-      <button class="youtube__button header__button" onclick="playVideo('${videoId}')">Play</button>
-    `;
+                      <div class="youtube__image">
+                        <img class="youtube__image-item" src="${thumbnailUrl}" alt="${title}">
+                      </div>
+                      <p class="youtube__title">${title}</p>
+                      <button class="youtube__button header__button" onclick="playVideo('${videoId}')">Play</button>
+                    `;
 
                     searchResultsContainer.appendChild(listItem);
                   });
                 }
 
-                // проверка нахождения видео в плейлисте
-                function getAllPlaylistsForChannel(
-                  channelId,
-                  nextPageToken = null
-                ) {
+                function searchAlbumsAndPlaylistsForChannel(channelId) {
                   const maxResults = 50;
-                  const playlistsUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&channelId=${channelId}&key=${apiKey}&maxResults=${maxResults}&pageToken=${
-                    nextPageToken || ""
-                  }`;
+                  const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=album+release+playlist&type=playlist&channelId=${channelId}&key=${apiKey}&maxResults=${maxResults}`;
 
-                  return fetch(playlistsUrl)
+                  return fetch(searchUrl)
                     .then((response) => response.json())
                     .then((data) => {
-                      const playlists = data.items || [];
-                      console.log("Playlists for channel:", playlists);
-
-                      // Проверяем, есть ли следующая страница
-                      const nextPageToken = data.nextPageToken;
-                      if (nextPageToken) {
-                        // Рекурсивно вызываем функцию для следующей страницы
-                        return getAllPlaylistsForChannel(
-                          channelId,
-                          nextPageToken
-                        ).then((nextPagePlaylists) =>
-                          playlists.concat(nextPagePlaylists)
-                        );
-                      } else {
-                        return playlists;
-                      }
+                      const albumsAndPlaylists = data.items || [];
+                      console.log(
+                        "Albums and playlists for channel:",
+                        albumsAndPlaylists
+                      );
+                      return albumsAndPlaylists;
                     })
                     .catch((error) => {
                       console.error(
-                        "Error in getAllPlaylistsForChannel:",
+                        "Error in searchAlbumsAndPlaylistsForChannel:",
                         error
                       );
                       throw error;
@@ -230,9 +204,57 @@
                       throw error;
                     });
                 }
-                // конец проверки нахождения видео в плейлисте
+
+                function getTracksInAlbum(albumId, nextPageToken = null) {
+                  const maxResults = 50;
+                  const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${albumId}&key=${apiKey}&pageToken=${
+                    nextPageToken || ""
+                  }`;
+
+                  return fetch(playlistItemsUrl)
+                    .then((response) => response.json())
+                    .then((data) => {
+                      const playlistItems = data.items || [];
+                      console.log("Tracks in album:", playlistItems);
+
+                      // Проверяем, есть ли следующая страница
+                      const nextPageToken = data.nextPageToken;
+                      if (nextPageToken) {
+                        // Рекурсивно вызываем функцию для следующей страницы
+                        return getTracksInAlbum(albumId, nextPageToken).then(
+                          (nextPageTracks) =>
+                            playlistItems.concat(nextPageTracks)
+                        );
+                      } else {
+                        return playlistItems;
+                      }
+                    })
+                    .catch((error) => {
+                      console.error("Error in getTracksInAlbum:", error);
+                      throw error;
+                    });
+                }
 
                 function playVideo(videoId) {
+                  // Вот эта часть кода перенесена внутрь функции playVideo
+                  function getVideoOwnerChannelId(videoId) {
+                    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${apiKey}`;
+
+                    return fetch(videoUrl)
+                      .then((response) => response.json())
+                      .then((data) => {
+                        const video = data.items[0];
+                        return video.snippet.channelId;
+                      })
+                      .catch((error) => {
+                        console.error(
+                          "Error in getVideoOwnerChannelId:",
+                          error
+                        );
+                        throw error;
+                      });
+                  }
+
                   // Использование(проверка на вхождение):
                   // Использование:
                   const videoIdToCheck = videoId;
@@ -244,47 +266,16 @@
                     .then((albumsAndPlaylists) => {
                       albumsAndPlaylists.forEach((item) => {
                         if (item.id.kind === "youtube#playlist") {
-                          const playlistId = item.id.playlistId;
-                          const playlistTitle = item.snippet.title;
-
-                          getAllVideosInPlaylist(playlistId)
-                            .then((videos) => {
-                              const isInPlaylist = videos.some(
-                                (video) =>
-                                  video.snippet.resourceId.videoId ===
-                                  videoIdToCheck
-                              );
-                              if (isInPlaylist) {
-                                console.log(
-                                  `Видео входит в плейлист "${playlistTitle}" (ID: ${playlistId})`
-                                );
-                              }
-                            })
-                            .catch((error) => console.error("Error:", error));
-                        } else if (item.id.kind === "youtube#playlist") {
-                          const albumId = item.id.playlistId;
-                          const albumTitle = item.snippet.title;
-
-                          getTracksInAlbum(albumId)
-                            .then((tracks) => {
-                              const isInAlbum = tracks.some(
-                                (track) =>
-                                  track.snippet.resourceId.videoId ===
-                                  videoIdToCheck
-                              );
-                              if (isInAlbum) {
-                                console.log(
-                                  `Видео входит в альбом "${albumTitle}" (ID: ${albumId})`
-                                );
-                              }
-                            })
-                            .catch((error) => console.error("Error:", error));
+                          // код остается без изменений
+                        } else if (item.id.kind === "youtube#album") {
+                          // код остается без изменений
                         }
                       });
                     })
                     .catch((error) => console.error("Error:", error));
                   // Использование(проверка на вхождение), end
 
+                  // Остальной код остается без изменений
                   const playerHtml = `
     <iframe id="youtubePlayer" class="youtube__player-item" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
     <a class="youtube__button header__button" href="https://www.youtube.com/watch?v=${videoId}" target="_blank">Download (.mp3 320kbps|| edit & cut .mp3)</a>
