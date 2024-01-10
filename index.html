@@ -75,6 +75,7 @@
                   type="text"
                   id="searchInput"
                   placeholder="Enter your search query"
+                  onkeydown="handlePressKey(event)"
                 />
                 <ul class="youtube__menu">
                   <li class="youtube-menu-item">
@@ -111,7 +112,7 @@
                     document.getElementById("searchInput").value;
                   const requestUrl = `${apiUrl}?q=${encodeURIComponent(
                     searchQuery
-                  )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=10`;
+                  )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=80`;
 
                   fetch(requestUrl)
                     .then((response) => response.json())
@@ -236,6 +237,27 @@
                 }
 
                 function playVideo(videoId) {
+                  const apiKey = "AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI";
+                  var apiUrl2 =
+                    "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
+                    videoId +
+                    "&key=" +
+                    apiKey;
+
+                  // Выполняем запрос
+                  fetch(apiUrl2)
+                    .then((response) => response.json())
+                    .then((data) => {
+                      // Получаем информацию о видео
+                      var playlistId = data.items[0].snippet.playlistId;
+
+                      // Делаем что-то с полученным playlistId
+                      console.log("Playlist ID:", playlistId);
+                    })
+                    .catch((error) =>
+                      console.error("Ошибка при запросе:", error)
+                    );
+
                   // Вот эта часть кода перенесена внутрь функции playVideo
                   function getVideoOwnerChannelId(videoId) {
                     const videoUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${apiKey}`;

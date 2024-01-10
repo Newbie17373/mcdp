@@ -1,6 +1,5 @@
-function checkEnter(event) {
+function handlePressKey(event) {
   if (event.key === "Enter") {
-    document.getElementById("myButton").click();
     searchYouTubeMusic();
   }
 }
