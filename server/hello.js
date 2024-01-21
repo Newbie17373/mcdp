@@ -10,13 +10,21 @@ const server = http.createServer((req, res) => {
   console.log(req.url, req.method);
 
   // Устанавливаем HTTP-заголовок ответа с HTTP статусом и Content type
-  res.writeHead(200, { "Content-Type": "text/html" });
+  res.writeHead(200, { "Content-Type": "application/json" });
 
-  res.write("<h1>Hello World</h1>");
-  res.write("<p>My name is Amir</p>");
+  // res.write(
+  //   "<head><link rel='stylesheet' href='./assets/css/pages/index.css' /></head>"
+  // );
 
-  // Отсылаем тело ответа "Hello World"
-  res.end();
+  // res.write("<h1>Hello World</h1>");
+  // res.write("<p>My name is Amir</p>");
+
+  const data = JSON.stringify([
+    { name: "Слава КПСС", age: 34 },
+    { name: "Замай", age: 37 },
+  ]);
+  // Отсылаем тело ответа
+  res.end(data);
 });
 
 // Выводим лог как только сервер будет запущен
