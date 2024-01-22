@@ -1,5 +1,7 @@
 // Загружаем HTTP модуль
 const http = require("http");
+const fs = require("fs");
+const path = require("path");
 
 const hostname = "127.0.0.1";
 const port = 8000;
@@ -12,12 +14,7 @@ const server = http.createServer((req, res) => {
   // Устанавливаем HTTP-заголовок ответа с HTTP статусом и Content type
   res.writeHead(200, { "Content-Type": "application/json" });
 
-  // res.write(
-  //   "<head><link rel='stylesheet' href='./assets/css/pages/index.css' /></head>"
-  // );
-
   // res.write("<h1>Hello World</h1>");
-  // res.write("<p>My name is Amir</p>");
 
   const data = JSON.stringify([
     { name: "Слава КПСС", age: 34 },
