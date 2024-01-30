@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Error</title>
-	</head>
-	<body>
-		<h1 class="error">error</h1>
-	</body>
+  <%- include('./partials/head.ejs')%>
+  <body>
+    <div class="wrapper">
+      <%- include('./partials/nav.ejs')%>
+      <div class="main">
+        <div
+          class="main__inside"
+          style="
+            height: 100% !important;
+            align-items: center !important;
+            margin-top: 100px;
+            justify-content: center !important;
+          "
+        >
+          <h1 class="error" style="text-align: center">error 404</h1>
+        </div>
+      </div>
+    </div>
+  </body>
 </html>

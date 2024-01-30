@@ -2,67 +2,10 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Music Chill Dance Player v 0.1</title>
-    <link rel="stylesheet" href="./assets/css/pages/index.css" />
-    <script src="./assets/js/burger.js" defer></script>
-    <script src="./assets/js/checkEnter.js" defer></script>
-    <script src="./assets/js/searchAlbums.js" defer></script>
-  </head>
+  <%- include('./partials/head.ejs')%>
   <body>
     <div class="wrapper">
-      <header class="header">
-        <div class="header__inside container">
-          <a class="header__intro" href="./index.html">
-            <div class="header__logo">
-              <img
-                src="./assets/img/logo.svg"
-                alt=""
-                class="header__logo-item"
-              />
-            </div>
-            <h1 class="header__title">MCDP</h1>
-          </a>
-          <nav class="header__nav">
-            <ul class="header__list">
-              <li class="header__list-item">
-                <a
-                  href="https://steady-beignet-63d8ae.netlify.app/#"
-                  class="header__list-link"
-                  >Main</a
-                >
-              </li>
-              <li class="header__list-item">
-                <a href="#" class="header__list-link">About</a>
-              </li>
-              <li class="header__list-item">
-                <a
-                  href="https://t.me/Bakerman111"
-                  target="_blank"
-                  class="header__list-link"
-                  >Donate</a
-                >
-              </li>
-              <li class="header__list-item">
-                <a href="#" class="header__list-link">Socials</a>
-              </li>
-              <li class="header__list-item header__list-item_last">
-                <div class="header__personal-area">
-                  <button class="header__button header__button_header">
-                    Sign in/Sign up
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </nav>
-
-          <div class="header__burger">
-            <span></span>
-          </div>
-        </div>
-      </header>
+      <%- include('./partials/nav.ejs')%>
       <div class="main">
         <div class="main__inside">
           <div class="youtube">
@@ -81,7 +24,7 @@
                 <ul class="youtube__menu">
                   <li class="youtube-menu-item">
                     <button
-                      id="myButton"
+                      id="search"
                       class="youtube__button header__button"
                       onclick="searchYouTubeMusic()"
                     >
@@ -142,7 +85,7 @@
                         <img class="youtube__image-item" src="${thumbnailUrl}" alt="${title}">
                       </div>
                       <p class="youtube__title">${title}</p>
-                      <button class="youtube__button header__button" onclick="playVideo('${videoId}')">Play</button>
+                      <button id='play' class="youtube__button header__button play" onclick="playVideo('${videoId}')">Play</button>
                     `;
 
                     searchResultsContainer.appendChild(listItem);
@@ -238,6 +181,7 @@
                 }
 
                 function playVideo(videoId) {
+                  clearResults();
                   var apiUrl2 =
                     "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
                     videoId +
