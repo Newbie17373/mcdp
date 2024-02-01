@@ -28,6 +28,14 @@
                       class="youtube__button header__button"
                       onclick="searchYouTubeMusic()"
                     >
+                      Search albums
+                    </button>
+                  </li>
+                  <li class="youtube-menu-item">
+                    <button
+                      id="searchAlbums"
+                      class="youtube__button header__button"
+                    >
                       Search
                     </button>
                   </li>
@@ -41,7 +49,9 @@
                   </li>
                 </ul>
               </div>
-              <ul id="searchResults" class="youtube__search-results"></ul>
+              <ul id="searchResults" class="youtube__search-results">
+                <%= albums %>
+              </ul>
 
               <!-- Add the player container -->
               <div class="youtube__player" id="player"></div>
