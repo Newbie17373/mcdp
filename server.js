@@ -9,9 +9,15 @@ let albums;
 api
   .initalize() // Retrieves Innertube Config
   .then((info) => {
-    api.search("Бутер Бродский", "album").then((result) => {
-      albums = JSON.parse(JSON.stringify(result));
-    });
+    api
+      // .search("Бутер Бродский", "album")
+      // .then((result) => {
+      //   albums = JSON.parse(JSON.stringify(result));
+      // })
+      .getAlbum("MPREb_SfbAZo06uRE")
+      .then((result) => {
+        console.log(result);
+      });
   });
 
 app.set("view engine", "ejs");
