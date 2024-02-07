@@ -1,5 +1,3 @@
-<!-- AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI -->
-
 <!DOCTYPE html>
 <html lang="en">
   <%- include('./partials/head.ejs')%>
@@ -14,43 +12,137 @@
               <h2 class="youtube__title">YouTube Music Integration</h2>
 
               <div class="youtube__search">
-                <label class="youtube__label" for="searchInput">Search:</label>
-                <input
-                  type="text"
-                  id="searchInput"
-                  placeholder="Enter your search query"
-                  onkeydown="handlePressKey(event)"
-                />
-                <ul class="youtube__menu">
-                  <li class="youtube-menu-item">
-                    <button
-                      id="search"
-                      class="youtube__button header__button"
-                      onclick="searchYouTubeMusic()"
-                    >
-                      Search albums
-                    </button>
-                  </li>
-                  <li class="youtube-menu-item">
-                    <button
-                      id="searchAlbums"
-                      class="youtube__button header__button"
-                    >
-                      Search
-                    </button>
-                  </li>
-                  <li class="youtube-menu-item">
-                    <button
-                      class="youtube__button header__button"
-                      onclick="clearResults()"
-                    >
-                      Clear
-                    </button>
-                  </li>
-                </ul>
+                <form
+                  class="youtube__search"
+                  action="/submit"
+                  enctype="multipart/form-data"
+                  method="get"
+                >
+                  <label class="youtube__label" for="searchInput"
+                    >Search:</label
+                  >
+                  <input
+                    type="text"
+                    id="searchInput"
+                    name="searchQuery"
+                    placeholder="Enter your search query"
+                    onkeydown="handlePressKey(event)"
+                    value=""
+                  />
+                  <fieldset class="youtube__field">
+                    <legend class="youtube__field-legend">
+                      Select a category
+                    </legend>
+
+                    <div class="youtube__field-button">
+                      <input
+                        class="youtube__field-button-item"
+                        type="radio"
+                        id="videos"
+                        name="category"
+                        value="videos"
+                        checked
+                      />
+                      <label for="video">videos</label>
+                    </div>
+
+                    <div class="youtube__field-button">
+                      <input
+                        class="youtube__field-button-item"
+                        type="radio"
+                        id="playlists"
+                        name="category"
+                        value="playlists"
+                      />
+                      <label for="playlists">playlists</label>
+                    </div>
+
+                    <div class="youtube__field-button">
+                      <input
+                        class="youtube__field-button-item"
+                        type="radio"
+                        id="albums"
+                        name="category"
+                        value="albums"
+                      />
+                      <label for="albums">albums</label>
+                    </div>
+
+                    <div class="youtube__field-button">
+                      <input
+                        class="youtube__field-button-item"
+                        type="radio"
+                        id="singers"
+                        name="category"
+                        value="singers"
+                      />
+                      <label for="singers">singers</label>
+                    </div>
+                  </fieldset>
+                  <ul class="youtube__menu">
+                    <li class="youtube-menu-item">
+                      <button
+                        id="search"
+                        class="youtube__button header__button"
+                        onclick=""
+                        value="videos"
+                        type="submit"
+                      >
+                        Search
+                      </button>
+                    </li>
+                    <li class="youtube-menu-item">
+                      <div
+                        class="youtube__button header__button"
+                        onclick="clearResults()"
+                      >
+                        Clear
+                      </div>
+                    </li>
+                  </ul>
+                </form>
               </div>
               <ul id="searchResults" class="youtube__search-results">
-                <%= JSON.stringify(albums) %>
+                <% if(searchResponce === 'albums') { %> 
+                  <% if(resultsAlbums) { %> <% resultsAlbums.content.forEach((result) => { %>
+                  <li>
+                  <div class="youtube__image">
+                    <img
+                      class="youtube__image-item"
+                      src="<%= result.thumbnails[3].url %>"
+                      alt="<%= result.name %>"
+                    />
+                  </div>
+                  <p class="youtube__title"><%= result.name %> - <%= result.artist %>. <%= result.year %></p>
+                  <button
+                    id="play"
+                    class="youtube__button header__button play"
+                    onclick="playAlbum('<%= result.playlistId %>')"
+                  >
+                    Play
+                  </button>
+                </li>
+                <% }) %> <% } %> <% } %>
+                <% if(searchResponce === 'videos') { %> 
+                  <% if(resultsVideos.length) { %> <% resultsVideos.forEach((result) => { %>
+                <li>
+                  <div class="youtube__image">
+                    <img
+                      class="youtube__image-item"
+                      src="<%= result.snippet.thumbnails.default.url %>"
+                      alt="<%= result.snippet.title %>"
+                    />
+                  </div>
+                  <p class="youtube__title"><%= result.snippet.title %></p>
+                  <button
+                    id="play"
+                    class="youtube__button header__button play"
+                    onclick="playVideo('<%= result.id.videoId %>')"
+                  >
+                    Play
+                  </button>
+                </li>
+                <% }) %> <% } %> <% } %>
               </ul>
 
               <!-- Add the player container -->
@@ -60,197 +152,18 @@
                 const apiKey = "AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI";
                 const apiUrl = "https://www.googleapis.com/youtube/v3/search";
                 const playerContainer = document.getElementById("player");
-
-                function searchYouTubeMusic() {
-                  const searchQuery =
-                    document.getElementById("searchInput").value;
-                  const requestUrl = `${apiUrl}?q=${encodeURIComponent(
-                    searchQuery
-                  )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=80`;
-
-                  fetch(requestUrl)
-                    .then((response) => response.json())
-                    .then((data) => displaySearchResults(data.items))
-                    .catch((error) => console.error("Error:", error));
-                }
-
-                const searchResultsContainer =
-                  document.getElementById("searchResults");
+                const searchResultsContainer = document.getElementById("searchResults");
 
                 function clearResults() {
                   searchResultsContainer.innerHTML = "";
+                  // searchResultsContainer.classList.toggle("hidden");
                 }
-
-                function displaySearchResults(results) {
-                  clearResults();
-
-                  results.forEach((result) => {
-                    const videoId = result.id.videoId;
-                    const title = result.snippet.title;
-                    const thumbnailUrl = result.snippet.thumbnails.default.url;
-
-                    const listItem = document.createElement("li");
-                    listItem.innerHTML = `
-                      <div class="youtube__image">
-                        <img class="youtube__image-item" src="${thumbnailUrl}" alt="${title}">
-                      </div>
-                      <p class="youtube__title">${title}</p>
-                      <button id='play' class="youtube__button header__button play" onclick="playVideo('${videoId}')">Play</button>
-                    `;
-
-                    searchResultsContainer.appendChild(listItem);
-                  });
-                }
-
-                function searchAlbumsAndPlaylistsForChannel(channelId) {
-                  const maxResults = 50;
-                  const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=album+release+playlist&type=playlist&channelId=${channelId}&key=${apiKey}&maxResults=${maxResults}`;
-
-                  return fetch(searchUrl)
-                    .then((response) => response.json())
-                    .then((data) => {
-                      const albumsAndPlaylists = data.items || [];
-                      console.log(
-                        "Albums and playlists for channel:",
-                        albumsAndPlaylists
-                      );
-                      return albumsAndPlaylists;
-                    })
-                    .catch((error) => {
-                      console.error(
-                        "Error in searchAlbumsAndPlaylistsForChannel:",
-                        error
-                      );
-                      throw error;
-                    });
-                }
-
-                function getAllVideosInPlaylist(
-                  playlistId,
-                  nextPageToken = null
-                ) {
-                  const maxResults = 50;
-                  const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${playlistId}&key=${apiKey}&pageToken=${
-                    nextPageToken || ""
-                  }`;
-
-                  return fetch(playlistItemsUrl)
-                    .then((response) => response.json())
-                    .then((data) => {
-                      const playlistItems = data.items || [];
-                      console.log("Playlist items:", playlistItems);
-
-                      // Проверяем, есть ли следующая страница
-                      const nextPageToken = data.nextPageToken;
-                      if (nextPageToken) {
-                        // Рекурсивно вызываем функцию для следующей страницы
-                        return getAllVideosInPlaylist(
-                          playlistId,
-                          nextPageToken
-                        ).then((nextPageVideos) =>
-                          playlistItems.concat(nextPageVideos)
-                        );
-                      } else {
-                        return playlistItems;
-                      }
-                    })
-                    .catch((error) => {
-                      console.error("Error in getAllVideosInPlaylist:", error);
-                      throw error;
-                    });
-                }
-
-                function getTracksInAlbum(albumId, nextPageToken = null) {
-                  const maxResults = 50;
-                  const playlistItemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${albumId}&key=${apiKey}&pageToken=${
-                    nextPageToken || ""
-                  }`;
-
-                  return fetch(playlistItemsUrl)
-                    .then((response) => response.json())
-                    .then((data) => {
-                      const playlistItems = data.items || [];
-                      console.log("Tracks in album:", playlistItems);
-
-                      // Проверяем, есть ли следующая страница
-                      const nextPageToken = data.nextPageToken;
-                      if (nextPageToken) {
-                        // Рекурсивно вызываем функцию для следующей страницы
-                        return getTracksInAlbum(albumId, nextPageToken).then(
-                          (nextPageTracks) =>
-                            playlistItems.concat(nextPageTracks)
-                        );
-                      } else {
-                        return playlistItems;
-                      }
-                    })
-                    .catch((error) => {
-                      console.error("Error in getTracksInAlbum:", error);
-                      throw error;
-                    });
+                function playAlbum(albumId) {
+                  window.location.href = `https://music.youtube.com/playlist?list=${albumId}`;
                 }
 
                 function playVideo(videoId) {
                   clearResults();
-                  var apiUrl2 =
-                    "https://www.googleapis.com/youtube/v3/videos?part=snippet&id=" +
-                    videoId +
-                    "&key=" +
-                    apiKey;
-
-                  // Выполняем запрос
-                  fetch(apiUrl2)
-                    .then((response) => response.json())
-                    .then((data) => {
-                      // Получаем информацию о видео
-                      var playlistId = data.items[0].snippet.playlistId;
-
-                      // Делаем что-то с полученным playlistId
-                      console.log("Playlist ID:", playlistId);
-                    })
-                    .catch((error) =>
-                      console.error("Ошибка при запросе:", error)
-                    );
-
-                  // Вот эта часть кода перенесена внутрь функции playVideo
-                  function getVideoOwnerChannelId(videoId) {
-                    const videoUrl = `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&part=snippet&key=${apiKey}`;
-
-                    return fetch(videoUrl)
-                      .then((response) => response.json())
-                      .then((data) => {
-                        const video = data.items[0];
-                        return video.snippet.channelId;
-                      })
-                      .catch((error) => {
-                        console.error(
-                          "Error in getVideoOwnerChannelId:",
-                          error
-                        );
-                        throw error;
-                      });
-                  }
-
-                  // Использование(проверка на вхождение):
-                  // Использование:
-                  const videoIdToCheck = videoId;
-
-                  getVideoOwnerChannelId(videoIdToCheck)
-                    .then((videoOwnerChannelId) =>
-                      searchAlbumsAndPlaylistsForChannel(videoOwnerChannelId)
-                    )
-                    .then((albumsAndPlaylists) => {
-                      albumsAndPlaylists.forEach((item) => {
-                        if (item.id.kind === "youtube#playlist") {
-                          // код остается без изменений
-                        } else if (item.id.kind === "youtube#album") {
-                          // код остается без изменений
-                        }
-                      });
-                    })
-                    .catch((error) => console.error("Error:", error));
-                  // Использование(проверка на вхождение), end
-
                   // Остальной код остается без изменений
                   const playerHtml = `
     <iframe id="youtubePlayer" class="youtube__player-item" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
@@ -273,14 +186,6 @@
               <!-- youtube music integration end -->
             </div>
           </div>
-          <!-- <iframe
-            src="https://discord.com/widget?id=1193286923272335502&theme=dark"
-            width="350"
-            height="500"
-            allowtransparency="true"
-            frameborder="0"
-            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-          ></iframe> -->
         </div>
       </div>
     </div>

@@ -69,6 +69,25 @@
   border-radius: 5px;
 }
 
+.youtube__field {
+}
+
+.youtube__field-legend {
+  font-size: 1.105rem;
+}
+
+.youtube__field-button {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 10px;
+  padding-left: 5px;
+}
+
+.youtube__field-button-item {
+  font-size: 0.9rem;
+}
+
 #searchResults {
   border-top: 1px solid #ffffff;
   padding-top: 20px;
@@ -76,6 +95,10 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 50px;
+}
+
+#searchResults.hidden {
+  height: 0;
 }
 
 @media (max-width: 768px) {
@@ -116,6 +139,7 @@
   background-color: #ff0000;
   border: 1px solid #1a1a1a;
   margin-top: 10px;
+  cursor: pointer;
 }
 
 .youtube__button:hover {
