@@ -1,6 +1,10 @@
-const arrow = document.querySelector(".tracklist__arrow");
+const arrows = document.querySelectorAll(".tracklist__arrow");
 const trackList = document.querySelector(".tracklist");
-arrow.addEventListener("click", () => {
-  arrow.classList.toggle("rotated");
-  trackList.classList.toggle("active");
+arrows.forEach((arrow) => {
+  arrow.addEventListener("click", () => {
+    arrows[0].classList.toggle("rotated"),
+      arrows[1].classList.toggle("rotated");
+    trackList.classList.toggle("active");
+    body.classList.toggle("scroll-lock");
+  });
 });

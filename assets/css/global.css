@@ -16,6 +16,10 @@ body {
   backdrop-filter: blur(10px);
 }
 
+body.scroll-lock {
+  overflow-y: hidden;
+}
+
 .wrapper {
   min-height: 100%;
   display: flex;
@@ -23,6 +27,7 @@ body {
   justify-content: center;
   flex-direction: column;
   flex: 1 0 auto;
+  position: relative;
 }
 
 .container {
