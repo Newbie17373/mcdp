@@ -44,20 +44,68 @@ app.get("/index.html", (req, res) => {
   res.redirect("/");
 });
 
-app.use("/submit", (req, res, next) => {
+app.use("/search", (req, res, next) => {
   const searchQuery = req.query.searchQuery || "";
   const category = req.query.category || "";
 
   //variants of search
   if (category === "videos") {
-    searchYouTubeMusic();
+    searchVideos();
   }
 
   if (category === "playlists") {
+    let firstIndex = searchQuery.indexOf("=");
+    let lastIndex = searchQuery.lastIndexOf("&");
+    let newPlaylistId = searchQuery.substring(
+      firstIndex + 1,
+      lastIndex || str.length
+    );
+
+    getTracks(newPlaylistId);
+    console.log(newPlaylistId);
+
+    //get tracks of album
+    function getTracks(playlistId) {
+      const requestUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistId}&key=${apiKey}&maxResults=150`;
+
+      fetch(requestUrl)
+        .then((response) => response.json())
+        .then((data) => sendAlbumsTracklist(data.items))
+        .catch((error) => console.error("Error:", error));
+    }
+
+    function sendAlbumsTracklist(resultsAlbum) {
+      title = "playlist";
+      searchResponce = "playlists";
+      let albumArr = [];
+
+      if (resultsAlbum.length) {
+        let fetchPromises = resultsAlbum.map((result) => {
+          const requestUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${result.contentDetails.videoId}&key=${apiKey}`;
+          return fetch(requestUrl)
+            .then((response) => response.json())
+            .then((data) => albumArr.push(data.items[0]))
+            .catch((error) => console.error("Error:", error));
+        });
+
+        Promise.all(fetchPromises)
+          .then(() => {
+            console.log(albumArr); // Этот console.log сработает, когда все запросы завершатся
+            res.render(createPath("index"), {
+              title,
+              albumArr,
+              searchResponce,
+            });
+          })
+          .catch((error) => console.error("Error:", error));
+      } else {
+        // Обработка ситуации, когда resultsAlbum пустой
+      }
+    }
   }
 
   if (category === "albums") {
-    searchYouTubeAlbum(searchQuery)
+    searchAlbums(searchQuery)
       .then((resultsAlbums) => {
         console.log(resultsAlbums);
         const title = "results";
@@ -86,35 +134,83 @@ app.use("/submit", (req, res, next) => {
   console.log(`поисковой запрос: ${searchQuery}, ${category}`);
 
   //search function
-  function searchYouTubeMusic() {
+  function searchVideos() {
     const requestUrl = `${apiUrl}?q=${encodeURIComponent(
       searchQuery
     )}&part=snippet&key=${apiKey}&type=video,playlist&maxResults=50`;
 
     fetch(requestUrl)
       .then((response) => response.json())
-      .then((data) => displaySearchResults(data.items))
+      .then((data) => sendVideos(data.items))
       .catch((error) => console.error("Error:", error));
   }
 
   //display function
-  function displaySearchResults(resultsVideos) {
+  function sendVideos(resultsVideos) {
     title = "videos";
     searchResponce = "videos";
     res.render(createPath("index"), { title, resultsVideos, searchResponce });
   }
 });
 
-async function searchYouTubeAlbum(searchQuery) {
+async function searchAlbums(searchQuery) {
   try {
     const info = await api.initalize(); // Retrieves Innertube Config
     const result = await api.search(searchQuery, "album"); // just search for album
+
     return JSON.parse(JSON.stringify(result));
   } catch (error) {
     console.error("Error occurred while searching YouTube album:", error);
     return null; // or handle the error in a way appropriate to your application
   }
 }
+
+app.use("/album", (req, res, next) => {
+  const album = req.query.albumId || "";
+
+  console.log(`запрос на альбом: ${album}`);
+  getTracks(album);
+
+  //get tracks of album
+  function getTracks(playlistId) {
+    const requestUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&playlistId=${playlistId}&key=${apiKey}&maxResults=150`;
+
+    fetch(requestUrl)
+      .then((response) => response.json())
+      .then((data) => sendAlbumsTracklist(data.items))
+      .catch((error) => console.error("Error:", error));
+  }
+
+  function sendAlbumsTracklist(resultsAlbum) {
+    title = "album";
+    searchResponce = "album";
+    let albumArr = [];
+
+    if (resultsAlbum.length) {
+      let fetchPromises = resultsAlbum.map((result) => {
+        const requestUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${result.contentDetails.videoId}&key=${apiKey}`;
+        return fetch(requestUrl)
+          .then((response) => response.json())
+          .then((data) => albumArr.push(data.items[0]))
+          .catch((error) => console.error("Error:", error));
+      });
+
+      Promise.all(fetchPromises)
+        .then(() => {
+          console.log(albumArr); // Этот console.log сработает, когда все запросы завершатся
+          res.render(createPath("index"), {
+            title,
+            albumArr,
+            searchResponce,
+          });
+        })
+        .catch((error) => console.error("Error:", error));
+    } else {
+      // Обработка ситуации, когда resultsAlbum пустой
+    }
+  }
+});
+
 app.use((req, res) => {
   const title = "error";
   res.status(404).render(createPath("error"), { title });

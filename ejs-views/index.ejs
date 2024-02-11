@@ -10,11 +10,10 @@
             <div class="youtube__inside container">
               <!-- youtube music integration -->
               <h2 class="youtube__title">YouTube Music Integration</h2>
-
               <div class="youtube__search">
                 <form
                   class="youtube__search"
-                  action="/submit"
+                  action="/search"
                   enctype="multipart/form-data"
                   method="get"
                 >
@@ -41,7 +40,9 @@
                         id="videos"
                         name="category"
                         value="videos"
-                        checked
+                        <% if(searchResponce === 'videos') { %>
+                            checked  
+                            <% } %>
                       />
                       <label for="video">videos</label>
                     </div>
@@ -53,8 +54,11 @@
                         id="playlists"
                         name="category"
                         value="playlists"
+                        <% if(searchResponce === 'playlists') { %>
+                            checked  
+                            <% } %>
                       />
-                      <label for="playlists">playlists</label>
+                      <label for="playlists">playlist *link*</label>
                     </div>
 
                     <div class="youtube__field-button">
@@ -64,6 +68,9 @@
                         id="albums"
                         name="category"
                         value="albums"
+                        <% if(searchResponce === 'albums') { %>
+                          checked  
+                          <% } %>
                       />
                       <label for="albums">albums</label>
                     </div>
@@ -75,6 +82,9 @@
                         id="singers"
                         name="category"
                         value="singers"
+                        <% if(searchResponce === 'singers') { %>
+                          checked  
+                          <% } %>
                       />
                       <label for="singers">singers</label>
                     </div>
@@ -99,13 +109,26 @@
                         Clear
                       </div>
                     </li>
+                    <li class="youtube-menu-item youtube-menu-item_last">
+                      <button class="tracklist__arrow" type="button">
+                        <svg class="svg-icon" xmlns="http://www.w3.org/2000/svg" height="50" viewBox="0 0 24 24" width="50" focusable="false" style="pointer-events: none; display: block; width: 100%; height: 100%;"><path d="m18 9.28-6.35 6.35-6.37-6.35.72-.71 5.64 5.65 5.65-5.65z"></path></svg>
+                      </button>
+                    </li>
                   </ul>
                 </form>
               </div>
               <ul id="searchResults" class="youtube__search-results">
                 <% if(searchResponce === 'albums') { %> 
-                  <% if(resultsAlbums) { %> <% resultsAlbums.content.forEach((result) => { %>
+                  <% if(resultsAlbums) { %> 
+                    <p class="youtube__title">Total found: <%= resultsAlbums.content.length %></p>
+                    <% resultsAlbums.content.forEach((result) => { %>
                   <li>
+                    <form
+                    class="youtube__search"
+                    action="/album"
+                    enctype="multipart/form-data"
+                    method="get"
+                  >
                   <div class="youtube__image">
                     <img
                       class="youtube__image-item"
@@ -113,23 +136,28 @@
                       alt="<%= result.name %>"
                     />
                   </div>
-                  <p class="youtube__title"><%= result.name %> - <%= result.artist %>. <%= result.year %></p>
+                  <p class="youtube__title"><%= result.name %> - <%= result.artist %>. <%= result.year %>. (<%= result.type %>)</p>
                   <button
                     id="play"
                     class="youtube__button header__button play"
-                    onclick="playAlbum('<%= result.playlistId %>')"
+                    name="albumId"
+                    value="<%= result.playlistId %>"
+                    type="submit"
                   >
-                    Play
+                    Check
                   </button>
+                  </form>
                 </li>
                 <% }) %> <% } %> <% } %>
                 <% if(searchResponce === 'videos') { %> 
-                  <% if(resultsVideos.length) { %> <% resultsVideos.forEach((result) => { %>
+                  <% if(resultsVideos.length) { %> 
+                    <p class="youtube__title">Total found: <%= resultsVideos.length %></p>
+                    <% resultsVideos.forEach((result) => { %>
                 <li>
                   <div class="youtube__image">
                     <img
                       class="youtube__image-item"
-                      src="<%= result.snippet.thumbnails.default.url %>"
+                      src="<%= result.snippet.thumbnails.medium.url %>"
                       alt="<%= result.snippet.title %>"
                     />
                   </div>
@@ -143,47 +171,132 @@
                   </button>
                 </li>
                 <% }) %> <% } %> <% } %>
+
+                <% if(searchResponce === 'album') { %>
+                  <% let num = 1 %>
+                  <p class="youtube__title">Total found: <%= albumArr.length %></p>
+                  <% if(albumArr.length) { %> <% albumArr.forEach((result) => { %>
+                    <li>
+                      <div class="youtube__image">
+                        <img
+                          class="youtube__image-item"
+                          src="<%= result.snippet.thumbnails.default.url %>"
+                          alt="<%= result.snippet.title %>"
+                        />
+                      </div>
+                      <p class="youtube__title"><%= num++%>. <%= result.snippet.title %></p>
+                      <button
+                        id="play"
+                        class="youtube__button header__button play"
+                        onclick="playVideo('<%= result.id %>')"
+                      >
+                      ▶• ılıılıılıılıılılılıılıı
+                      </button>
+                    </li>
+                    <% }) %><% } %> <% } %>
+                    <% if (searchResponce === 'playlists' && Array.isArray(albumArr)) { %>
+                      <% let num = 1 %>
+                      <% let albumArrString = JSON.stringify(albumArr);%>
+                      <script>
+                        localStorage.setItem("track list", '<%= albumArrString %>');
+                      </script>
+                      <p class="youtube__title">Total found: <%= albumArr.length %></p>
+                      <% albumArr.forEach((result) => { %>
+                        <% if (result && result.snippet && result.snippet.thumbnails && result.snippet.thumbnails.default) { %>
+                          <li>
+                            <div class="youtube__image">
+                              <img
+                                class="youtube__image-item"
+                                src="<%= result.snippet.thumbnails.default.url %>"
+                                alt="<%= result.snippet.title %>"
+                              />
+                            </div>
+                            <p class="youtube__title"><%= num++ %>. <%= result.snippet.title %></p>
+                            <button
+                              id="play"
+                              class="youtube__button header__button play"
+                              onclick="playVideo('<%= result.id %>')"
+                            >
+                              ▶• ılıılıılıılıılılılıılıı
+                            </button>
+                          </li>
+                        <% } %>
+                      <% }) %>
+                    <% } %>
               </ul>
 
               <!-- Add the player container -->
               <div class="youtube__player" id="player"></div>
 
-              <script>
-                const apiKey = "AIzaSyD0zrKhAYAFKvmxCJepXCcsM-C81Q3zRyI";
-                const apiUrl = "https://www.googleapis.com/youtube/v3/search";
-                const playerContainer = document.getElementById("player");
-                const searchResultsContainer = document.getElementById("searchResults");
-
-                function clearResults() {
-                  searchResultsContainer.innerHTML = "";
-                  // searchResultsContainer.classList.toggle("hidden");
-                }
-                function playAlbum(albumId) {
-                  window.location.href = `https://music.youtube.com/playlist?list=${albumId}`;
-                }
-
-                function playVideo(videoId) {
-                  clearResults();
-                  // Остальной код остается без изменений
-                  const playerHtml = `
-    <iframe id="youtubePlayer" class="youtube__player-item" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-    <a class="youtube__button header__button" href="https://www.youtubezz.com/watch?v=${videoId}" target="_blank">Download (.mp3 320kbps|| edit & cut .mp3)</a>
-  `;
-
-                  playerContainer.innerHTML = playerHtml;
-
-                  // Добавим событие 'onload' для iframe, чтобы начать воспроизведение после полной загрузки
-                  const youtubePlayer =
-                    document.getElementById("youtubePlayer");
-                  youtubePlayer.onload = function () {
-                    youtubePlayer.contentWindow.postMessage(
-                      '{"event":"command","func":"playVideo","args":""}',
-                      "*"
-                    );
-                  };
-                }
-              </script>
+              
               <!-- youtube music integration end -->
+              
+            </div>
+          </div>
+          <div class="tracklist">
+            <div class="tracklist__inside container">
+              <h3 class="tracklist__label youtube__label">Tracklist:</h3>
+              <ul class="tracklist__list">
+                <li class="tracklist__track">
+                  <div class="tracklist__track-img">
+                    <img src="https://i.ytimg.com/vi/LvE1WPbJlws/mqdefault.jpg" alt="" class="tracklist__track-img-item">
+                  </div>
+                  <h4 class="tracklist__title youtube__title">Катафалка</h4><span class="youtube__title">-</span><h4 class="tracklist__title youtube__title">СОЛОМА</h4>
+                  <button class="tracklist__track-button">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="PlayArrowFilledIcon" class="svg-icon icon-md" height="1em" width="1em">
+                      <path d="M8 19V5l11 7Z"></path>
+                    </svg>
+                  </button>
+                  <p class="tracklist__track-duration">2:40</p>
+                </li>
+                <li class="tracklist__track">
+                  <div class="tracklist__track-img">
+                    <img src="https://i.ytimg.com/vi/LvE1WPbJlws/mqdefault.jpg" alt="" class="tracklist__track-img-item">
+                  </div>
+                  <h4 class="tracklist__title youtube__title">Катафалка</h4><span class="youtube__title">-</span><h4 class="tracklist__title youtube__title">СОЛОМА</h4>
+                  <button class="tracklist__track-button">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="PlayArrowFilledIcon" class="svg-icon icon-md" height="1em" width="1em">
+                      <path d="M8 19V5l11 7Z"></path>
+                    </svg>
+                  </button>
+                  <p class="tracklist__track-duration">2:40</p>
+                </li>
+                <li class="tracklist__track">
+                  <div class="tracklist__track-img">
+                    <img src="https://i.ytimg.com/vi/LvE1WPbJlws/mqdefault.jpg" alt="" class="tracklist__track-img-item">
+                  </div>
+                  <h4 class="tracklist__title youtube__title">Катафалка</h4><span class="youtube__title">-</span><h4 class="tracklist__title youtube__title">СОЛОМА</h4>
+                  <button class="tracklist__track-button">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="PlayArrowFilledIcon" class="svg-icon icon-md" height="1em" width="1em">
+                      <path d="M8 19V5l11 7Z"></path>
+                    </svg>
+                  </button>
+                  <p class="tracklist__track-duration">2:40</p>
+                </li>
+                <li class="tracklist__track">
+                  <div class="tracklist__track-img">
+                    <img src="https://i.ytimg.com/vi/LvE1WPbJlws/mqdefault.jpg" alt="" class="tracklist__track-img-item">
+                  </div>
+                  <h4 class="tracklist__title youtube__title">Катафалка</h4><span class="youtube__title">-</span><h4 class="tracklist__title youtube__title">СОЛОМА</h4>
+                  <button class="tracklist__track-button">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="PlayArrowFilledIcon" class="svg-icon icon-md" height="1em" width="1em">
+                      <path d="M8 19V5l11 7Z"></path>
+                    </svg>
+                  </button>
+                  <p class="tracklist__track-duration">2:40</p>
+                </li><li class="tracklist__track">
+                  <div class="tracklist__track-img">
+                    <img src="https://i.ytimg.com/vi/LvE1WPbJlws/mqdefault.jpg" alt="" class="tracklist__track-img-item">
+                  </div>
+                  <h4 class="tracklist__title youtube__title">Катафалка</h4><span class="youtube__title">-</span><h4 class="tracklist__title youtube__title">СОЛОМА</h4>
+                  <button class="tracklist__track-button">
+                    <svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-testid="PlayArrowFilledIcon" class="svg-icon icon-md" height="1em" width="1em">
+                      <path d="M8 19V5l11 7Z"></path>
+                    </svg>
+                  </button>
+                  <p class="tracklist__track-duration">2:40</p>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
